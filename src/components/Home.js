@@ -8,15 +8,14 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
 import EditProfilePopup from "./EditProfilePopup.js";
 import EditAvatarPopup from "./EditAvatarPopup.js";
 import AddPlacePopup from "./AddPlacePopup.js";
-import { withRouter } from 'react-router-dom';
-
+import { withRouter } from "react-router-dom";
 
 class Home extends React.Component {
   static contextType = CurrentUserContext;
-
+  headerLinks = [{ text: "Выход", src: "/logout" }];
   constructor(props) {
     super(props);
-
+    this.headerLinks.unshift({text: props.email, src: "/spoodlydoop"})
     this.state = {
       isEditProfilePopupOpen: false,
       isAddPlacePopupOpen: false,
@@ -32,7 +31,6 @@ class Home extends React.Component {
         this.context.about = userData.about;
         this.context.avatar = userData.avatar;
         this.context.id = userData._id;
-
         this.setState({ cards: cards });
       })
       .catch((err) => console.error(err));
@@ -59,17 +57,18 @@ class Home extends React.Component {
       api.unlikeCard(card._id).then((data) => {
         this.setState({
           cards: this.state.cards.map((c) => (c._id === card._id ? data : c)),
-        }).catch((data) => {
-          console.log(data);
-        });
+        })
+      }).catch((data) => {
+        console.log(data);
       });
     } else {
       api.likeCard(card._id).then((data) => {
         this.setState({
           cards: this.state.cards.map((c) => (c._id === card._id ? data : c)),
-        }).catch((data) => {
-          console.log(data);
-        });
+        })
+      })
+      .catch((data) => {
+        console.log(data);
       });
     }
   };
@@ -78,9 +77,10 @@ class Home extends React.Component {
     api.deleteCard(card._id).then((data) => {
       this.setState({
         cards: this.state.cards.filter((c) => c._id !== card._id),
-      }).catch((data) => {
-        console.log(data);
-      });
+      })
+    })
+    .catch((data) => {
+      console.log(data);
     });
   };
 
@@ -135,7 +135,7 @@ class Home extends React.Component {
     return (
       <div className="page">
         <div className="page__content">
-          <Header />
+          <Header links={this.headerLinks} />
           <Main
             onEditProfile={this.handleEditProfileClick}
             onAddPlace={this.handleAddPlaceClick}

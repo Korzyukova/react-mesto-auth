@@ -2,7 +2,7 @@ import React from "react";
 import Header from "./Header";
 
 class Register extends React.Component {
-  headerLinks = [{ text: "Войти", src: "/sign-up" }];
+  headerLinks = [{ text: "Войти", src: "/sign-in" }];
 
   constructor(props) {
     super(props);
@@ -16,29 +16,9 @@ class Register extends React.Component {
     };
   }
 
-  handleSubmit(e) {
-    console.log('click')
+  async handleSubmit(e) {
     e.preventDefault();
-    const email = this.state.email;
-    const password = this.state.password;
-
-
-    const requestOptions = {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
-        email,
-        password
-      })
-    };
-    console.log(requestOptions.body)
-    fetch('https://auth.nomoreparties.co/signup', requestOptions)
-    .then((data) => data.json())
-    .then((data) => {
-      console.log(data.token)
-      localStorage.setItem("token", data.token)
-      window.location.assign("/")
-    })
+    this.props.handleRegister(this.state.email, this.state.password);
   }
 
   handleEmailChange = (event) => {
@@ -72,13 +52,12 @@ class Register extends React.Component {
                   onChange={this.handlePasswordChange}
                 ></input>
               </div>
-              <button
-                className="page__auth_button"
-                type="submit"
-              >
+              <button className="page__auth_button" type="submit">
                 Зарегистрироваться
               </button>
-              <a className="page__auth_link" href="/sign-in">Уже зарегистрированы?Войти</a>
+              <a className="page__auth_link" href="/sign-in">
+                Уже зарегистрированы?Войти
+              </a>
             </form>
           </div>
         </div>

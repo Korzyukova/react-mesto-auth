@@ -3,53 +3,77 @@ import "../index.css";
 import Login from "./Login";
 import Register from "./Register";
 import Home from "./Home";
-import { BrowserRouter as Router, Switch, Route, Redirect, withRouter } from "react-router-dom";
+import Logout from "./Logout";
+import InfoToolTip from "./InfoToolTip";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Redirect,
+  withRouter,
+} from "react-router-dom";
+import { tokenCheck, signIn, signUp } from "../auth.js";
 
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       loggedIn: false,
+      email: "",
+      isSuccessful: false,
+      showPopUp: false,
     };
-    this.tokenCheck = this.tokenCheck.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogin.bind(this);
+    this.handleRegister = this.handleRegister.bind(this);
   }
 
-  componentDidMount() {
-    this.tokenCheck()
+  async componentDidMount() {
+    const success = await tokenCheck();
+    if (success) {
+      this.setState(
+        {
+          loggedIn: true,
+        },
+        () => {
+          this.props.history.replace("/");
+        }
+      );
+    }
   }
 
-  handleLogin() {
+  async handleLogin(email, password) {
+    const success = await signIn(email, password);
+    success
+      ? this.setState({
+          showPopUp: true,
+          isSuccessful: true,
+          loggedIn: true,
+          email,
+        })
+      : this.setState({ showPopUp: true, loggedIn: true, email });
+  }
+
+  handleLogout() {
     this.setState({
-      loggedIn: true,
+      loggedIn: false,
+      showPopUp: false,
+      email: "",
+      isSuccessful: false,
     });
   }
 
-  tokenCheck() {
-    const token = localStorage.getItem("token");
-    if (token) {
-      fetch("https://auth.nomoreparties.co/users/me", {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      })
-        .then((data) => data.json())
-        .then((data) => {
-          if (data) {
-            this.setState({
-              loggedIn: true,
-            }, () => {
-              this.props.history.replace("/")
-            });
-          }
-        })
-        .catch((err) => {
-          err && console.error(err);
-        });
-    }
+  async handleRegister(email, password) {
+    const success = await signUp(this.state.email, this.state.password);
+    success && window.location.assign("/sign-in");
   }
+
+  closePopUp = () => {
+    this.setState({
+      showPopUp: false,
+      isSuccessful: false,
+    });
+  };
 
   render() {
     return (
@@ -57,13 +81,28 @@ class App extends React.Component {
         <Router>
           <Switch>
             <Route exact path="/">
-              {this.state.loggedIn ? <Home /> : <Redirect to="/sign-in" />}
+              {this.state.loggedIn ? (
+                <Home email={this.state.email} />
+              ) : (
+                <Redirect to="/sign-in" />
+              )}
+            </Route>
+            <Route exact path="/logout">
+              <Logout handleLogout={this.handleLogout} />
             </Route>
             <Route exact path="/sign-up">
-              {this.state.loggedIn ? <Home /> : <Register />}
+              {this.state.loggedIn ? (
+                <Home email={this.state.email} />
+              ) : (
+                <Register handleRegister={this.handleRegister} />
+              )}
             </Route>
             <Route exact path="/sign-in">
-              {this.state.loggedIn ? <Home /> : <Login handleLogin={this.handleLogin} />}
+              {this.state.loggedIn ? (
+                <Home email={this.state.email} />
+              ) : (
+                <Login handleLogin={this.handleLogin} />
+              )}
             </Route>
             <Route>
               {this.state.loggedIn ? (
@@ -74,6 +113,12 @@ class App extends React.Component {
             </Route>
           </Switch>
         </Router>
+        {this.state.showPopUp && (
+          <InfoToolTip
+            isSuccessful={this.state.isSuccessful}
+            onClose={this.closePopUp}
+          />
+        )}
       </>
     );
   }

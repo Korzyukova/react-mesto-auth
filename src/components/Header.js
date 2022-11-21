@@ -1,6 +1,5 @@
 import logo from "../images/Vector.svg"; // Путь к изображению внутри сборки
 import React from "react";
-import { Link } from "react-router-dom";
 
 class Header extends React.Component {
   links; //Array of links
@@ -16,9 +15,9 @@ class Header extends React.Component {
           {this.links &&
             this.links.map((l) => {
               return (
-                <Link key={l.text} className="header__link" to={l.src}>
+                <a key={l.text} className="header__link" href={l.src}>
                   {l.text}
-                </Link>
+                </a>
               );
             })}
         </div>

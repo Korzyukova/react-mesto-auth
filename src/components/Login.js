@@ -1,49 +1,28 @@
 import React from "react";
 import Header from "./Header";
 import { withRouter } from "react-router-dom";
-import InfoToolTip from "./InfoToolTip";
 
 class Login extends React.Component {
-  headerLinks = [{ text: "Регистрация", src: "/sign-in" }];
+  headerLinks = [{ text: "Регистрация", src: "/sign-up" }];
 
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleEmailChange = this.handleEmailChange.bind(this);
     this.handlePasswordChange = this.handlePasswordChange.bind(this);
-    this.closePopUp = this.closePopUp.bind(this);
     this.state = {
       email: "",
       password: "",
-      isSuccessful: false,
-      showPopUp: false,
     };
   }
 
-  handleSubmit(e) {
+  async handleSubmit(e) {
     e.preventDefault();
-    const email = this.state.email;
-    const password = this.state.password;
-
-    const requestOptions = {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
-    };
-    fetch("https://auth.nomoreparties.co/signin", requestOptions)
-      .then((data) => data.json())
-      .then((data) => {
-        if (data.token) {
-          //popup class change to open here
-          this.setState({ showPopUp: true, isSuccessful: true });
-          localStorage.setItem("token", data.token);
-        } else {
-          this.setState({ showPopUp: true });
-        }
-      });
+    this.props.handleLogin(this.state.email, this.state.password);
+    this.setState({
+      email: "",
+      password: "",
+    });
   }
 
   handleEmailChange = (event) => {
@@ -52,22 +31,6 @@ class Login extends React.Component {
 
   handlePasswordChange = (event) => {
     this.setState({ password: event.target.value });
-  };
-
-  closePopUp = () => {
-    this.setState(
-      {
-        email: "",
-        password: "",
-        showPopUp: false,
-      },
-      () => {
-        if (this.state.isSuccessful) {
-          this.props.handleLogin();
-          this.props.history.push("/");
-        }
-      }
-    );
   };
 
   render() {
@@ -99,12 +62,6 @@ class Login extends React.Component {
             </form>
           </div>
         </div>
-        {this.state.showPopUp && (
-          <InfoToolTip
-            isSuccessful={this.state.isSuccessful}
-            onClose={this.closePopUp}
-          />
-        )}
       </>
     );
   }
