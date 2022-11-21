@@ -80,6 +80,7 @@ class App extends React.Component {
         console.log(this.state.showPopUp);
         //this.props.history.replace("/sign-in");
         window.location.assign("/sign-in");
+        //тут изменила
       }
     );
   }
