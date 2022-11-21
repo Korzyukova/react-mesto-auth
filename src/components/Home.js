@@ -15,7 +15,7 @@ class Home extends React.Component {
   headerLinks = [{ text: "Выход", src: "/logout" }];
   constructor(props) {
     super(props);
-    this.headerLinks.unshift({text: props.email, src: "/spoodlydoop"})
+    this.headerLinks.unshift({ text: props.email, src: "/" });
     this.state = {
       isEditProfilePopupOpen: false,
       isAddPlacePopupOpen: false,
@@ -54,34 +54,41 @@ class Home extends React.Component {
     const isLiked = card.likes.some((i) => i._id === this.context.id);
 
     if (isLiked) {
-      api.unlikeCard(card._id).then((data) => {
-        this.setState({
-          cards: this.state.cards.map((c) => (c._id === card._id ? data : c)),
+      api
+        .unlikeCard(card._id)
+        .then((data) => {
+          this.setState({
+            cards: this.state.cards.map((c) => (c._id === card._id ? data : c)),
+          });
         })
-      }).catch((data) => {
-        console.log(data);
-      });
+        .catch((data) => {
+          console.log(data);
+        });
     } else {
-      api.likeCard(card._id).then((data) => {
-        this.setState({
-          cards: this.state.cards.map((c) => (c._id === card._id ? data : c)),
+      api
+        .likeCard(card._id)
+        .then((data) => {
+          this.setState({
+            cards: this.state.cards.map((c) => (c._id === card._id ? data : c)),
+          });
         })
-      })
-      .catch((data) => {
-        console.log(data);
-      });
+        .catch((data) => {
+          console.log(data);
+        });
     }
   };
 
   handleCardDelete = (card) => {
-    api.deleteCard(card._id).then((data) => {
-      this.setState({
-        cards: this.state.cards.filter((c) => c._id !== card._id),
+    api
+      .deleteCard(card._id)
+      .then((data) => {
+        this.setState({
+          cards: this.state.cards.filter((c) => c._id !== card._id),
+        });
       })
-    })
-    .catch((data) => {
-      console.log(data);
-    });
+      .catch((data) => {
+        console.log(data);
+      });
   };
 
   closeAllPopups = () => {

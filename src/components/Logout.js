@@ -1,10 +1,10 @@
-import React, {useEffect} from 'react';
+import React from "react";
 import { Redirect } from "react-router-dom";
 
 export default function Logout(props) {
-    useEffect(() => {
-        localStorage.removeItem("token");
-        props.handleLogout();
-    })
-    return <Redirect to="/sign-in" />
+  if (localStorage.getItem("token") !== null) {
+    localStorage.removeItem("token");
+    props.handleLogout();
+    return <Redirect to="/sign-in" />;
+  }
 }

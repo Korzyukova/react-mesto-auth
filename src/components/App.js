@@ -24,12 +24,16 @@ class App extends React.Component {
       showPopUp: false,
     };
     this.handleLogin = this.handleLogin.bind(this);
-    this.handleLogout = this.handleLogin.bind(this);
+    this.handleLogout = this.handleLogout.bind(this);
     this.handleRegister = this.handleRegister.bind(this);
+    this.closePopUp = this.closePopUp.bind(this);
   }
 
   async componentDidMount() {
-    const success = await tokenCheck();
+    const success = await tokenCheck()
+    .catch((err) => {
+      err && console.error(err);
+    });
     if (success) {
       this.setState(
         {
@@ -43,28 +47,48 @@ class App extends React.Component {
   }
 
   async handleLogin(email, password) {
-    const success = await signIn(email, password);
+    debugger;
+    const success = await signIn(email, password).catch((err) => {
+      err && console.error(err);
+    });
     success
-      ? this.setState({
-          showPopUp: true,
-          isSuccessful: true,
-          loggedIn: true,
-          email,
+      ? this.setState(() => {
+          return {
+            showPopUp: true,
+            isSuccessful: true,
+            loggedIn: true,
+            email,
+          };
         })
       : this.setState({ showPopUp: true, loggedIn: true, email });
   }
 
   handleLogout() {
-    this.setState({
-      loggedIn: false,
-      showPopUp: false,
-      email: "",
-      isSuccessful: false,
-    });
+    debugger;
+
+    this.setState(
+      () => {
+        return {
+          loggedIn: false,
+          showPopUp: false,
+          email: "",
+          isSuccessful: false,
+        };
+      },
+      () => {
+        console.log(this.state.loggedIn);
+        console.log(this.state.showPopUp);
+        //this.props.history.replace("/sign-in");
+        window.location.assign("/sign-in");
+      }
+    );
   }
 
   async handleRegister(email, password) {
-    const success = await signUp(this.state.email, this.state.password);
+    debugger;
+    const success = await signUp(this.state.email, this.state.password).catch((err) => {
+      err && console.error(err);
+    });
     success && window.location.assign("/sign-in");
   }
 

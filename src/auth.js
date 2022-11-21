@@ -7,10 +7,8 @@ export async function tokenCheck() {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-    }).catch((err) => {
-      err && console.error(err);
-    });
-    const data = await response.json();
+    })
+    const data = await checkResponse(response);
     if (data) {
       return true;
     } else {
@@ -34,7 +32,7 @@ export async function signIn(email, password) {
     "https://auth.nomoreparties.co/signin",
     requestOptions
   );
-  const data = await response.json();
+  const data = await checkResponse(response);
   if (data.token) {
     localStorage.setItem("token", data.token);
     return true;
@@ -56,12 +54,20 @@ export async function signUp(email, password) {
     "https://auth.nomoreparties.co/signup",
     requestOptions
   );
-  const data = await response.json();
+  const data = await checkResponse(response);
   if (data.token) {
     localStorage.setItem("token", data.token);
     window.location.assign("/");
     return true;
   } else {
     return false;
+  }
+}
+
+export async function checkResponse(res){
+  if(res.ok) {
+    return await res.json();
+  } else {
+    return new Error(400);
   }
 }
