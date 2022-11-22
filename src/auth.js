@@ -55,6 +55,7 @@ export async function signUp(email, password) {
     requestOptions
   );
   const data = await checkResponse(response);
+  console.log(data)
   if (data.token) {
     localStorage.setItem("token", data.token);
     window.location.assign("/");
@@ -68,6 +69,6 @@ export async function checkResponse(res){
   if(res.ok) {
     return await res.json();
   } else {
-    return new Error(400);
+    throw new Error(400);
   }
 }

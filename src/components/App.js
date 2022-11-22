@@ -30,8 +30,7 @@ class App extends React.Component {
   }
 
   async componentDidMount() {
-    const success = await tokenCheck()
-    .catch((err) => {
+    const success = await tokenCheck().catch((err) => {
       err && console.error(err);
     });
     if (success) {
@@ -47,25 +46,22 @@ class App extends React.Component {
   }
 
   async handleLogin(email, password) {
-    debugger;
     const success = await signIn(email, password).catch((err) => {
       err && console.error(err);
     });
     success
       ? this.setState(() => {
           return {
-            showPopUp: true,
+            // showPopUp: true,
             isSuccessful: true,
             loggedIn: true,
             email,
           };
         })
-      : this.setState({ showPopUp: true, loggedIn: true, email });
+      : this.setState({loggedIn: true, email });
   }
 
   handleLogout() {
-    debugger;
-
     this.setState(
       () => {
         return {
@@ -76,8 +72,6 @@ class App extends React.Component {
         };
       },
       () => {
-        console.log(this.state.loggedIn);
-        console.log(this.state.showPopUp);
         //this.props.history.replace("/sign-in");
         window.location.assign("/sign-in");
         //тут изменила
@@ -86,11 +80,21 @@ class App extends React.Component {
   }
 
   async handleRegister(email, password) {
-    debugger;
-    const success = await signUp(this.state.email, this.state.password).catch((err) => {
-      err && console.error(err);
+    signUp(email, password)
+    .then(() => {
+      this.setState(() => {
+        return {
+          showPopUp: true,
+          isSuccessful: true,
+          loggedIn: true,
+          email,
+        };
+      });
+    })
+    .catch((err) => {
+      console.log(err);
+      err && this.setState({ showPopUp: true });
     });
-    success && window.location.assign("/sign-in");
   }
 
   closePopUp = () => {
